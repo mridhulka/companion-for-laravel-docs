@@ -1,0 +1,29 @@
+{
+  "name": "Companion for Laravel docs",
+  "description": "An extension that helps to search Laravel docs in multiple ways.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules_1.json"
+      }
+    ]
+  },
+  "action": {},
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "notifications",
+    "declarativeNetRequestWithHostAccess",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "*://laravel.com/*",
+    "*://www.laravel.com/*"
+  ],
+  "omnibox": { "keyword" : "ll" }
+}
