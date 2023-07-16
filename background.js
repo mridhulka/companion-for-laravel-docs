@@ -12,7 +12,7 @@
 let tabIdToPreviousUrl = {};
 
 const currentLaravelVersion = '10.x'
-const searchUrl = "https://www.google.com/search?q=" + 'site:laravel.com/docs/' + currentLaravelVersion + ' '
+const googleSearchUrl = "https://www.google.com/search?q=" + 'site:laravel.com/docs/' + currentLaravelVersion + ' '
 
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
@@ -79,7 +79,15 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
 chrome.contextMenus.onClicked.addListener(genericOnClick);
 
 function searchOnNewTab(selectedText) {
-    chrome.tabs.create({ url: searchUrl + selectedText});
+    let laravelDocsUrl = "https://laravel.com/docs/" + currentLaravelVersion + "/" + selectedText;
+    fetch(laravelDocsUrl)
+        .then(function (response) {
+            if (response.status === 200) {
+                chrome.tabs.create({ url: laravelDocsUrl });
+            } else {
+                chrome.tabs.create({ url: googleSearchUrl + selectedText});
+            }
+        })
 }
 
 // A generic onclick callback function.
@@ -110,5 +118,5 @@ chrome.runtime.onInstalled.addListener(function () {
 
 
 chrome.omnibox.onInputEntered.addListener((text) => {
-    chrome.tabs.create({ url: searchUrl + text});
+    chrome.tabs.create({ url: googleSearchUrl + text});
 });
