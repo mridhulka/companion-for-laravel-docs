@@ -79,7 +79,15 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
 chrome.contextMenus.onClicked.addListener(genericOnClick);
 
 function searchOnNewTab(selectedText) {
-    chrome.tabs.create({ url: searchUrl + selectedText});
+    let laravelDocsUrl = "https://laravel.com/docs/" + currentLaravelVersion + "/" + selectedText;
+    fetch(laravelDocsUrl)
+        .then(function (response) {
+            if (response.status === 200) {
+                chrome.tabs.create({ url: laravelDocsUrl });
+            } else {
+                chrome.tabs.create({ url: searchUrl + selectedText});
+            }
+        })
 }
 
 // A generic onclick callback function.
