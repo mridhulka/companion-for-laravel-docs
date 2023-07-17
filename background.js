@@ -83,14 +83,16 @@ function searchOnNewTab(selectedText) {
     if (hasBlankSpaces(selectedText)) {
         chrome.tabs.create({ url: googleSearchUrl + selectedText });
     }
-    endpointExist(selectedText)
-        .then(function (isValid) {
-            if (isValid) {
-                chrome.tabs.create({ url: laravelDocsUrl + selectedText.toLowerCase() });
-            } else {
-                chrome.tabs.create({ url: googleSearchUrl + selectedText });
-            }
-        });
+    else {
+        endpointExist(selectedText)
+            .then(function (isValid) {
+                if (isValid) {
+                    chrome.tabs.create({ url: laravelDocsUrl + selectedText.toLowerCase() });
+                } else {
+                    chrome.tabs.create({ url: googleSearchUrl + selectedText });
+                }
+            });
+    }
 }
 
 // A generic onclick callback function.
