@@ -80,6 +80,9 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
 chrome.contextMenus.onClicked.addListener(genericOnClick);
 
 function searchOnNewTab(selectedText) {
+    if (hasBlankSpaces(selectedText)) {
+        chrome.tabs.create({ url: googleSearchUrl + selectedText });
+    }
     endpointExist(selectedText)
         .then(function (isValid) {
             if (isValid) {
@@ -118,14 +121,19 @@ chrome.runtime.onInstalled.addListener(function () {
 
 
 chrome.omnibox.onInputEntered.addListener((text) => {
-    endpointExist(text)
-        .then(function (isValid) {
-            if (isValid) {
-                chrome.tabs.create({ url: laravelDocsUrl + text.toLowerCase() });
-            } else {
-                chrome.tabs.create({ url: googleSearchUrl + text });
-            }
-        });
+    if (hasBlankSpaces(text)) {
+        chrome.tabs.create({ url: googleSearchUrl + text });
+    }
+    else {
+        endpointExist(text)
+            .then(function (isValid) {
+                if (isValid) {
+                    chrome.tabs.create({ url: laravelDocsUrl + text.toLowerCase() });
+                } else {
+                    chrome.tabs.create({ url: googleSearchUrl + text });
+                }
+            });
+    }
 });
 
 
@@ -138,4 +146,9 @@ function endpointExist(text) {
                 return false
             }
         })
+}
+
+function hasBlankSpaces(string) {
+    const hasBlankSpaces = /\s/.test(string);
+    return hasBlankSpaces;
 }
