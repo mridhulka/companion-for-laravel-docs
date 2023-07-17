@@ -13,6 +13,7 @@ let tabIdToPreviousUrl = {};
 
 const currentLaravelVersion = '10.x'
 const googleSearchUrl = "https://www.google.com/search?q=" + 'site:laravel.com/docs/' + currentLaravelVersion + ' '
+const laravelDocsUrl = "https://laravel.com/docs/" + currentLaravelVersion + "/"
 
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
@@ -79,15 +80,14 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
 chrome.contextMenus.onClicked.addListener(genericOnClick);
 
 function searchOnNewTab(selectedText) {
-    let laravelDocsUrl = "https://laravel.com/docs/" + currentLaravelVersion + "/" + selectedText;
-    fetch(laravelDocsUrl)
-        .then(function (response) {
-            if (response.status === 200) {
-                chrome.tabs.create({ url: laravelDocsUrl });
+    endpointExist(selectedText)
+        .then(function (isValid) {
+            if (isValid) {
+                chrome.tabs.create({ url: laravelDocsUrl + selectedText.toLowerCase() });
             } else {
-                chrome.tabs.create({ url: googleSearchUrl + selectedText});
+                chrome.tabs.create({ url: googleSearchUrl + selectedText });
             }
-        })
+        });
 }
 
 // A generic onclick callback function.
@@ -118,5 +118,24 @@ chrome.runtime.onInstalled.addListener(function () {
 
 
 chrome.omnibox.onInputEntered.addListener((text) => {
-    chrome.tabs.create({ url: googleSearchUrl + text});
+    endpointExist(text)
+        .then(function (isValid) {
+            if (isValid) {
+                chrome.tabs.create({ url: laravelDocsUrl + text.toLowerCase() });
+            } else {
+                chrome.tabs.create({ url: googleSearchUrl + text });
+            }
+        });
 });
+
+
+function endpointExist(text) {
+    return fetch(laravelDocsUrl + text.toLowerCase())
+        .then(function (response) {
+            if (response.status === 200) {
+                return true
+            } else {
+                return false
+            }
+        })
+}
